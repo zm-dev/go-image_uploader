@@ -61,8 +61,15 @@ type URL interface {
 func Generate(ctx context.Context, hashValue string, opt ...Option) (string, error) {
 	url, ok := FromContext(ctx)
 	if !ok {
-
 		return "", errors.New("context中不存在 URL")
 	}
 	return url.Generate(hashValue, opt...), nil
+}
+
+func MustGenerate(ctx context.Context, hashValue string, opt ...Option) (string) {
+	if u, err := Generate(ctx, hashValue, opt...); err != nil {
+		panic(err)
+	} else {
+		return u
+	}
 }
