@@ -5,6 +5,13 @@ import (
 	"errors"
 )
 
+var (
+	XSOptions = []Option{Width(50), Height(50), Quality(90)}
+	SMOptions = []Option{Width(100), Height(100), Quality(90)}
+	MDOptions = []Option{Width(200), Height(200), Quality(90)}
+	LGOptions = []Option{Width(400), Height(400), Quality(90)}
+)
+
 type options struct {
 	width, height               uint
 	widthPercent, heightPercent float32
