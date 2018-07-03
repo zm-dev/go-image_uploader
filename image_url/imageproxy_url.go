@@ -55,7 +55,7 @@ func (ip *imageproxyURL) buildOptionsStr(opts *options) string {
 		opt.WriteString(strconv.FormatFloat(float64(opts.heightPercent), 'f', -1, 32))
 	}
 
-	if opts.quality != 100 {
+	if opts.quality < 100 {
 		if opt.Len() > 0 {
 			opt.WriteRune(',')
 		}
