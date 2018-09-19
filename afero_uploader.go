@@ -52,7 +52,7 @@ func (au *aferoUploader) Upload(fh FileHeader) (*Image, error) {
 }
 
 func (au *aferoUploader) UploadFromURL(u string, filename string) (*Image, error) {
-	if filename != "" {
+	if filename == "" {
 		filename = filepath.Base(u)
 	}
 	file, size, err := DownloadImage(u)
