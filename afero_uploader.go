@@ -13,7 +13,10 @@ type aferoUploader struct {
 }
 
 func (au *aferoUploader) saveToFs(hashValue string, f File) error {
-	f.Seek(0, io.SeekStart)
+	_, err := f.Seek(0, io.SeekStart)
+	if err != nil {
+		return err
+	}
 	// todo savepath
 	newFile, err := au.fs.Create(hashValue)
 	if err != nil {
@@ -25,7 +28,6 @@ func (au *aferoUploader) saveToFs(hashValue string, f File) error {
 }
 
 func (au *aferoUploader) Upload(fh FileHeader) (*Image, error) {
-
 	info, err := DecodeImageInfo(fh.File)
 	if err != nil {
 		return nil, err
@@ -53,7 +55,7 @@ func (au *aferoUploader) UploadFromURL(u string, filename string) (*Image, error
 	if filename != "" {
 		filename = filepath.Base(u)
 	}
-	file, size, err := downloadImage(u)
+	file, size, err := DownloadImage(u)
 
 	if err != nil {
 		return nil, err

@@ -31,7 +31,7 @@ func removeFile(f *os.File) {
 	os.Remove(f.Name())
 }
 
-func downloadImage(u string) (f *os.File, size int64, err error) {
+func DownloadImage(u string) (f *os.File, size int64, err error) {
 	f, err = ioutil.TempFile("", "image_uploader")
 	if err != nil {
 		return nil, 0, fmt.Errorf("create temp file faild. err=%+v", err)
@@ -60,3 +60,5 @@ func Upload(ctx context.Context, fh FileHeader) (*Image, error) {
 	}
 	return u.Upload(fh)
 }
+
+

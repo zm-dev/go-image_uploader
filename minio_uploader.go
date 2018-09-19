@@ -4,6 +4,7 @@ import (
 	"github.com/minio/minio-go"
 	"mime"
 	"path/filepath"
+	"io"
 )
 
 type minioUploader struct {
@@ -14,11 +15,15 @@ type minioUploader struct {
 }
 
 func (mu *minioUploader) saveToMinio(hashValue string, fh FileHeader, info ImageInfo) error {
+	_, err := fh.File.Seek(0, io.SeekStart)
+	if err != nil {
+		return err
+	}
 	// 在 apline 镜像中 mime.TypeByExtension 只能用 jpg
 	if info.format == "jpeg" {
 		info.format = "jpg"
 	}
-	_, err := mu.minioClient.PutObject(
+	_, err = mu.minioClient.PutObject(
 		mu.bucketName,
 		hashValue,
 		fh.File,
@@ -56,7 +61,7 @@ func (mu *minioUploader) UploadFromURL(u string, filename string) (*Image, error
 	if filename != "" {
 		filename = filepath.Base(u)
 	}
-	file, size, err := downloadImage(u)
+	file, size, err := DownloadImage(u)
 
 	if err != nil {
 		return nil, err
@@ -69,6 +74,7 @@ func (mu *minioUploader) UploadFromURL(u string, filename string) (*Image, error
 		Size:     size,
 		File:     file,
 	}
+
 	return mu.Upload(fh)
 }
 
