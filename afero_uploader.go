@@ -3,6 +3,7 @@ package image_uploader
 import (
 	"github.com/spf13/afero"
 	"io"
+	"path/filepath"
 )
 
 type aferoUploader struct {
@@ -46,6 +47,26 @@ func (au *aferoUploader) Upload(fh FileHeader) (*Image, error) {
 		return nil, err
 	}
 	return saveToStore(au.s, hashValue, fh.Filename, info)
+}
+
+func (au *aferoUploader) UploadFromURL(u string, filename string) (*Image, error) {
+	if filename != "" {
+		filename = filepath.Base(u)
+	}
+	file, size, err := downloadImage(u)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer removeFile(file)
+
+	fh := FileHeader{
+		Filename: filename,
+		Size:     size,
+		File:     file,
+	}
+	return au.Upload(fh)
 }
 
 func NewAferoUploader(h Hasher, s Store, fs afero.Fs) Uploader {

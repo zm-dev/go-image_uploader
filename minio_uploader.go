@@ -3,6 +3,7 @@ package image_uploader
 import (
 	"github.com/minio/minio-go"
 	"mime"
+	"path/filepath"
 )
 
 type minioUploader struct {
@@ -49,6 +50,26 @@ func (mu *minioUploader) Upload(fh FileHeader) (*Image, error) {
 	}
 
 	return saveToStore(mu.s, hashValue, fh.Filename, info)
+}
+
+func (mu *minioUploader) UploadFromURL(u string, filename string) (*Image, error) {
+	if filename != "" {
+		filename = filepath.Base(u)
+	}
+	file, size, err := downloadImage(u)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer removeFile(file)
+
+	fh := FileHeader{
+		Filename: filename,
+		Size:     size,
+		File:     file,
+	}
+	return mu.Upload(fh)
 }
 
 func NewMinioUploader(h Hasher, s Store, minioClient *minio.Client, bucketName string) Uploader {

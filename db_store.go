@@ -20,7 +20,7 @@ func (is *dbStore) ImageCreate(image *Image) error {
 
 func (is *dbStore) ImageExist(hash string) (bool, error) {
 	var count uint
-	err := is.db.Model(&Image{Hash: hash}).Count(&count).Error
+	err := is.db.Model(&Image{}).Where(Image{Hash: hash}).Count(&count).Error
 	return count > 0, err
 }
 
