@@ -58,7 +58,7 @@ func (mu *minioUploader) Upload(fh FileHeader) (*Image, error) {
 }
 
 func (mu *minioUploader) UploadFromURL(u string, filename string) (*Image, error) {
-	if filename != "" {
+	if filename == "" {
 		filename = filepath.Base(u)
 	}
 	file, size, err := DownloadImage(u)
