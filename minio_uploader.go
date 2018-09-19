@@ -5,7 +5,6 @@ import (
 	"mime"
 	"path/filepath"
 	"io"
-	"fmt"
 )
 
 type minioUploader struct {
