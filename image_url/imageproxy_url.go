@@ -13,6 +13,9 @@ type imageproxyURL struct {
 }
 
 func (ip *imageproxyURL) Generate(hashValue string, opt ...Option) string {
+	if hashValue == "" {
+		return ""
+	}
 	opts := defaultURLOptions
 	for _, o := range opt {
 		o(&opts)
