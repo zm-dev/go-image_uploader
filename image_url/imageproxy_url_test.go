@@ -61,7 +61,7 @@ func TestGenerate(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		u := NewImageproxyURL(test.imageproxyHost, test.baseURL, test.bucketName, test.omitBaseURL)
+		u := NewImageproxyURL(test.imageproxyHost, test.baseURL, test.bucketName, test.omitBaseURL, nil)
 		v := u.Generate(test.hashValue, test.opts...)
 		if test.url != v {
 			t.Errorf("url生成出错, u.Generate(%s)=%s, excepted %s", test.hashValue, v, test.url)

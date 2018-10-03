@@ -10,12 +10,15 @@ type imageproxyURL struct {
 	baseURL        string
 	bucketName     string
 	omitBaseURL    bool
+	h2sn           Hash2StorageName
 }
 
 func (ip *imageproxyURL) Generate(hashValue string, opt ...Option) string {
-	if hashValue == "" {
+	name, err := ip.h2sn.Convent(hashValue)
+	if err != nil {
 		return ""
 	}
+
 	opts := defaultURLOptions
 	for _, o := range opt {
 		o(&opts)
@@ -32,7 +35,8 @@ func (ip *imageproxyURL) Generate(hashValue string, opt ...Option) string {
 
 	sb.WriteString(ip.bucketName)
 	sb.WriteRune('/')
-	sb.WriteString(hashValue)
+
+	sb.WriteString(name)
 	return sb.String()
 }
 
@@ -68,11 +72,15 @@ func (ip *imageproxyURL) buildOptionsStr(opts *options) string {
 	return opt.String()
 }
 
-func NewImageproxyURL(imageproxyHost, baseURL, bucketName string, omitBaseURL bool) URL {
+func NewImageproxyURL(imageproxyHost, baseURL, bucketName string, omitBaseURL bool, h2sn Hash2StorageName) URL {
+	if h2sn == nil {
+		h2sn = Hash2StorageNameFunc(DefaultHash2StorageNameFunc)
+	}
 	return &imageproxyURL{
 		imageproxyHost: strings.TrimRight(imageproxyHost, "/"),
 		baseURL:        strings.TrimRight(baseURL, "/"),
 		bucketName:     bucketName,
 		omitBaseURL:    omitBaseURL,
+		h2sn:           h2sn,
 	}
 }

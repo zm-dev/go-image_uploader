@@ -3,6 +3,7 @@ package image_url
 import (
 	"context"
 	"errors"
+	"strings"
 )
 
 var (
@@ -72,4 +73,29 @@ func MustGenerate(ctx context.Context, hashValue string, opt ...Option) (string)
 	} else {
 		return u
 	}
+}
+
+type Hash2StorageName interface {
+	Convent(hash string) (storageName string, err error)
+}
+
+type Hash2StorageNameFunc func(hash string) (storageName string, err error)
+
+func (f Hash2StorageNameFunc) Convent(hash string) (storageName string, err error) {
+	return f(hash)
+}
+
+func DefaultHash2StorageNameFunc(hash string) (storageName string, err error) {
+	return hash, nil
+}
+
+func TwoCharsPrefixHash2StorageNameFunc(hash string) (storageName string, err error) {
+	if len(hash) <= 2 {
+		return "", errors.New("hash length must greater than 2 chars")
+	}
+	sb := strings.Builder{}
+	sb.WriteString(hash[:2])
+	sb.WriteString("/")
+	sb.WriteString(hash[2:])
+	return sb.String(), nil
 }

@@ -12,7 +12,7 @@ func TestAferoUploader_Upload(t *testing.T) {
 	defer testTx.Rollback()
 	fs := afero.NewMemMapFs()
 	store := NewDBStore(testTx)
-	uploader := NewAferoUploader(HashFunc(MD5HashFunc), store, fs)
+	uploader := NewAferoUploader(HashFunc(MD5HashFunc), store, fs, nil)
 	tests := []struct {
 		filename string
 	}{
@@ -58,7 +58,7 @@ func TestAferoUploader_UploadFromURL(t *testing.T) {
 	defer testTx.Rollback()
 	fs := afero.NewMemMapFs()
 	store := NewDBStore(testTx)
-	uploader := NewAferoUploader(HashFunc(MD5HashFunc), store, fs)
+	uploader := NewAferoUploader(HashFunc(MD5HashFunc), store, fs, nil)
 	tests := []struct {
 		url string
 	}{

@@ -12,10 +12,15 @@ type minioUploader struct {
 	s           Store
 	minioClient *minio.Client
 	bucketName  string
+	h2sn        Hash2StorageName
 }
 
 func (mu *minioUploader) saveToMinio(hashValue string, fh FileHeader, info ImageInfo) error {
-	_, err := fh.File.Seek(0, io.SeekStart)
+	name, err := mu.h2sn.Convent(hashValue)
+	if err != nil {
+		return err
+	}
+	_, err = fh.File.Seek(0, io.SeekStart)
 	if err != nil {
 		return err
 	}
@@ -23,9 +28,10 @@ func (mu *minioUploader) saveToMinio(hashValue string, fh FileHeader, info Image
 	if info.format == "jpeg" {
 		info.format = "jpg"
 	}
+
 	_, err = mu.minioClient.PutObject(
 		mu.bucketName,
-		hashValue,
+		name,
 		fh.File,
 		fh.Size,
 		minio.PutObjectOptions{ContentType: mime.TypeByExtension("." + info.format)},
@@ -78,6 +84,9 @@ func (mu *minioUploader) UploadFromURL(u string, filename string) (*Image, error
 	return mu.Upload(fh)
 }
 
-func NewMinioUploader(h Hasher, s Store, minioClient *minio.Client, bucketName string) Uploader {
-	return &minioUploader{h: h, s: s, minioClient: minioClient, bucketName: bucketName}
+func NewMinioUploader(h Hasher, s Store, minioClient *minio.Client, bucketName string, h2sn Hash2StorageName) Uploader {
+	if h2sn == nil {
+		h2sn = Hash2StorageNameFunc(DefaultHash2StorageNameFunc)
+	}
+	return &minioUploader{h: h, s: s, minioClient: minioClient, bucketName: bucketName, h2sn: h2sn}
 }

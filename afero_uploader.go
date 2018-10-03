@@ -7,18 +7,23 @@ import (
 )
 
 type aferoUploader struct {
-	h  Hasher
-	s  Store
-	fs afero.Fs
+	h    Hasher
+	s    Store
+	fs   afero.Fs
+	h2sn Hash2StorageName
 }
 
 func (au *aferoUploader) saveToFs(hashValue string, f File) error {
-	_, err := f.Seek(0, io.SeekStart)
+	name, err := au.h2sn.Convent(hashValue)
+	if err != nil {
+		return err
+	}
+	_, err = f.Seek(0, io.SeekStart)
 	if err != nil {
 		return err
 	}
 	// todo savepath
-	newFile, err := au.fs.Create(hashValue)
+	newFile, err := au.fs.Create(name)
 	if err != nil {
 		return err
 	}
@@ -71,6 +76,9 @@ func (au *aferoUploader) UploadFromURL(u string, filename string) (*Image, error
 	return au.Upload(fh)
 }
 
-func NewAferoUploader(h Hasher, s Store, fs afero.Fs) Uploader {
-	return &aferoUploader{h: h, s: s, fs: fs}
+func NewAferoUploader(h Hasher, s Store, fs afero.Fs, h2sn Hash2StorageName) Uploader {
+	if h2sn == nil {
+		h2sn = Hash2StorageNameFunc(DefaultHash2StorageNameFunc)
+	}
+	return &aferoUploader{h: h, s: s, fs: fs, h2sn: h2sn}
 }
