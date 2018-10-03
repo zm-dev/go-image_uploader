@@ -44,7 +44,6 @@ func (mu *minioUploader) Upload(fh FileHeader) (*Image, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	hashValue, err := mu.h.Hash(fh.File)
 	if err != nil {
 		return nil, err
