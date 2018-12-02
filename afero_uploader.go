@@ -26,7 +26,7 @@ func (au *aferoUploader) saveToFs(hashValue string, f File) error {
 	baseDir:=filepath.Dir(name)
 	_, err = au.fs.Stat(baseDir)
 	if os.IsNotExist(err) {
-		au.fs.MkdirAll(baseDir, 0655)
+		au.fs.MkdirAll(baseDir, 0755)
 	}
 	// todo savepath
 	newFile, err := au.fs.Create(name)
