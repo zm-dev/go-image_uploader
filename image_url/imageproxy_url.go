@@ -32,9 +32,10 @@ func (ip *imageproxyURL) Generate(hashValue string, opt ...Option) string {
 		sb.WriteString(ip.baseURL)
 		sb.WriteRune('/')
 	}
-
-	sb.WriteString(ip.bucketName)
-	sb.WriteRune('/')
+	if ip.bucketName != "" {
+		sb.WriteString(ip.bucketName)
+		sb.WriteRune('/')
+	}
 
 	sb.WriteString(name)
 	return sb.String()

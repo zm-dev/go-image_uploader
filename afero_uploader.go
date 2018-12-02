@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/afero"
 	"io"
 	"path/filepath"
+	"os"
 )
 
 type aferoUploader struct {
@@ -21,6 +22,11 @@ func (au *aferoUploader) saveToFs(hashValue string, f File) error {
 	_, err = f.Seek(0, io.SeekStart)
 	if err != nil {
 		return err
+	}
+	baseDir:=filepath.Dir(name)
+	_, err = au.fs.Stat(baseDir)
+	if os.IsNotExist(err) {
+		au.fs.MkdirAll(baseDir, 0644)
 	}
 	// todo savepath
 	newFile, err := au.fs.Create(name)
